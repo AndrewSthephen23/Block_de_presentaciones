@@ -1,0 +1,46 @@
+-- Crear la tabla Proveedores
+CREATE TABLE Proveedores (
+    ruc VARCHAR(15) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    direccion VARCHAR(200) NOT NULL
+);
+
+-- Crear la tabla Productos
+CREATE TABLE Productos (
+    codigo SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio_unitario DECIMAL(10, 2) NOT NULL,
+    proveedor_ruc VARCHAR(15) REFERENCES Proveedores(ruc)
+);
+
+-- Crear la tabla Clientes
+CREATE TABLE Clientes (
+    dni VARCHAR(15) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    direccion VARCHAR(200) NOT NULL,
+    fecha_nacimiento DATE NOT NULL
+);
+
+-- Crear la tabla Compras
+CREATE TABLE Compras (
+    id SERIAL PRIMARY KEY,
+    cliente_dni VARCHAR(15) REFERENCES Clientes(dni),
+    producto_codigo SERIAL REFERENCES Productos(codigo),
+    fecha_compra DATE NOT NULL
+);
+
+// Pregunta 2 
+SELECT
+    C.nombre AS cliente_nombre,
+    C.apellidos AS cliente_apellidos,
+    P.nombre AS producto_nombre,
+    Cm.fecha_compra,
+    P.precio_unitario AS precio_producto,
+    COUNT(*) AS cantidad,
+    P.precio_unitario * COUNT(*) AS subtotal
+FROM Clientes C
+JOIN Compras Cm ON C.dni = Cm.cliente_dni
+JOIN Productos P ON Cm.producto_codigo = P.codigo
+WHERE C.nombre = 'Jose' AND C.apellidos = 'Perez'
+GROUP BY C.nombre, C.apellidos, P.nombre, Cm.fecha_compra, P.precio_unitario;
